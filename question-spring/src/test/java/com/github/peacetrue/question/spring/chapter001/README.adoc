@@ -127,12 +127,12 @@ spring bean 初始化流程为：
 . 获取``Bean2``的依赖属性``Bean1``，因为``Bean1``已经存在于bean容器中，直接取出
 
 == 总结
-spring bean 相互依赖是没有问题，需要注意以下几点：
+spring bean 相互依赖是没有问题的，但需要注意以下几点：
 
 . 尽可能避免使用构造函数依赖
 . 双向构造函数依赖肯定会导致循环引用异常
 . 如果一方使用构造函数依赖，那么必须保证另一方先被初始化
 
 
-本文源码地址： 
+本文源码地址： https://github.com/peacetrue/java-question/tree/master/question-spring/src/test/java/com/github/peacetrue/question/spring/chapter001[spring bean 循环引用]
 
