@@ -1,0 +1,139 @@
+= java-question
+:toc: left
+:numbered:
+
+通过具体代码示例，描述在java中遇到的问题
+
+== 设计
+=== 软件开发流程
+* 需求分析
+* 概要设计
+* 详细设计
+* 编码
+* 测试
+* 上线
+
+=== 概要设计怎么写
+参考 https://blog.csdn.net/u014315849/article/details/50770495[概要设计怎么写]
+
+概要设计怎么写或者说一个能指导开发、测试的文档怎么写。
+只说自己能想到的。
+
+.有了产品原型
+网络架构模式:: BS
+开发环境::
+. JDK版本
+. 开发工具
+. 项目管理工具
+. 板块控制工具
+. <其他软件>
+技术栈::
+. 依赖注入容器
+. 持久层
+. 控制层
+. 视图层
+. 分布式通讯
+. 缓存
+. 消息队列
+. 任务
+. 日志
+. <前端>
+开发规范::
+. 命名规范
+. 代码格式
+. 典型思路
+数据库规范::
+项目规范::
+. 项目名称
+. 项目结构
+总体设计::
+. 系统结构
+. 组件结构
+. 部署结构
+. <前后端分离>
+功能::
+接口::
+数据结构::
+性能::
+. 总用户数
+. 日活用户
+. 并发量
+. 可预见性的增长
+稳定性::
+. 服务器
+. 高可用
+. 负载均衡
+待解决问题:: &nbsp;
+
+=== 实体类及其相关的枚举与分离的控制器关联？
+参考<黄金管家-积存金，商户入驻申请>
+
+== 验证
+=== 图片的验证
+* 根据格式：png、jpg、jpeg、gif、bmp
+* 根据内容：可能直接篡改文件后缀名
+
+== spring
+=== 循环引用
+参考 spring.chapter001
+
+=== 生命周期流程
+. InstantiationAwareBeanPostProcessor.postProcessBeforeInstantiation
+. MergedBeanDefinitionPostProcessor.postProcessMergedBeanDefinition
+. InstantiationAwareBeanPostProcessor.postProcessAfterInstantiation
+. InstantiationAwareBeanPostProcessor.postProcessPropertyValues
+
+=== ``DefaultListableBeanFactory``的初始化流程
+参考 spring.chapter002
+
+参考 https://www.jianshu.com/p/4b9d7455c8b2[简书-DefaultListableBeanFactory]
+
+=== ``AnnotationConfigApplicationContext``的初始化流程
+参考 spring.chapter003。
+
+
+
+* https://www.jianshu.com/p/a569aae8b722
+
+=== Java配置 的解析
+ConfigurationClassPostProcessor::
+BeanFactoryPostProcessor用于@Configuration类的引导处理。使用或时默认注册。否则，可以像任何其他BeanFactoryPostProcessor一样手动声明。这个后处理器是Ordered.HIGHEST_PRECEDENCE，因为在任何其他BeanFactoryPostProcessor执行之前，配置类中声明的任何Bean方法都必须注册它们各自的bean定义。
+ConfigurationClass::
+表示用户定义的@Configuration类。包含一组Bean方法，包括在类的祖先中定义的所有此类方法，以“扁平化”方式。
+ConfigurationClassParser::
+解析Configuration类定义，填充ConfigurationClass对象的集合（解析单个Configuration类可能会导致任意数量的ConfigurationClass对象，因为一个Configuration类可能使用Import annotation导入另一个）。此类有助于将解析Configuration类结构的问题与基于该模型的内容注册BeanDefinition对象的问题分开（除了需要立即注册的@ComponentScan注释）。这种基于ASM的实现避免了反射和急切的类加载，以便与Spring ApplicationContext中的延迟类加载有效地进行互操作。
+ConfigurationClassBeanDefinitionReader::
+读取给定的完全填充的ConfigurationClass实例集，根据其内容使用给定的BeanDefinitionRegistry注册bean定义。此类是在BeanDefinitionReader层次结构之后建模的，但由于一组配置类不是Resource，因此不实现/扩展其任何工件。
+
+=== 任何@Bean都会被解析？
+
+
+
+=== 如何在``BeanDefinitionRegistryPostProcessor``中使用``@ConfigurationProperties``
+see com.github.peacetrue.question.spring.one
+
+=== 如何批量注册Bean
+
+
+=== Resource体系结构
+
+=== BeanDefinition体系结构
+* BeanDefinition
+* BeanDefinitionRegistry
+bean definition读取::
+* ClassPathBeanDefinitionScanner
+* XmlBeanDefinitionReader
+* AnnotatedBeanDefinitionReader：竟然没有从BeanDefinitionReader集成
+* ConfigurationClassBeanDefinitionReader
+
+=== Bean扫描
+ClassPathBeanDefinitionScanner::
+* scanCandidateComponents
+MetadataReaderFactory::
+MetadataReader::
+ScannedGenericBeanDefinition::
+
+=== Resource体系
+
+=== ResourceLoader体系
+

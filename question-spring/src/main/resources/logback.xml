@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="5 seconds" debug="false">
+
+    <appender name="rootConsole" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{0}.%M - %msg%n</pattern>
+            <charset>utf-8</charset>
+        </encoder>
+    </appender>
+
+    <root level="trace">
+        <appender-ref ref="rootConsole"/>
+    </root>
+    <logger name="com.github.peacetrue" level="trace"/>
+    <logger name="org.springframework" level="off"/>
+
+</configuration>

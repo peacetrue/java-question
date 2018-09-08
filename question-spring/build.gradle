@@ -1,0 +1,6 @@
+dependencies {
+    compile 'org.springframework:spring-context-support'
+    compile 'org.springframework:spring-webmvc'
+    testCompile 'org.springframework.boot:spring-boot-autoconfigure-processor'
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
+}

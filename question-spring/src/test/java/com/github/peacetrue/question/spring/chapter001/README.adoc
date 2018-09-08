@@ -1,0 +1,138 @@
+= spring bean 循环引用
+xiayx <xiayouxue@hotmail.com>
+v1.0, 2018-09-08: RELEASE
+:doctype: docbook
+:toc: left
+:numbered: 5
+:imagesdir: assets/images
+:sourcedir: src/main/java
+:resourcesdir: src/main/resources
+:testsourcedir: src/test/java
+:testresourcesdir: src/test/resources
+:source-highlighter: coderay
+:coderay-linenums-mode: inline
+
+== 问题描述
+在使用 spring 时，有时候会遇到如下异常：
+[source%nowrap,java]
+----
+Caused by: org.springframework.beans.factory.BeanCurrentlyInCreationException: Error creating bean with name 'bean1': Requested bean is currently in creation: Is there an unresolvable circular reference?
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.beforeSingletonCreation(DefaultSingletonBeanRegistry.java:345)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:221)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:315)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:251)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1138)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1065)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:584)
+	... 52 more
+----
+那么循环引用到底是怎么回事呢？
+
+== 案例1
+``Bean1``和``Bean2``以属性注入的方式相互依赖。
+
+.Bean1
+[source%nowrap,java]
+----
+include::case1/Bean1.java[tags=class]
+----
+
+.Bean2
+[source%nowrap,java]
+----
+include::case1/Bean2.java[tags=class]
+----
+
+.QuestionTest
+[source%nowrap,java]
+----
+include::QuestionTest.java[tags=package;case1]
+----
+
+测试发现没有问题。
+
+spring bean 初始化流程为：
+
+. 通过无参构造函数实例化``Bean1``
+. 将``Bean1``加入bean容器中
+. 设置``Bean1``的依赖属性``Bean2``
+. 通过无参构造函数实例化``Bean2``
+. 将``Bean2``加入bean容器中
+. 设置``Bean2``的依赖属性``Bean1``，因为``Bean1``已经存在于bean容器中，直接取出
+
+
+== 案例2
+* ``Bean1``以构造函数注入的方式依赖于``Bean2``。
+* ``Bean2``以属性注入的方式依赖于``Bean1``。
+
+.Bean1
+[source%nowrap,java]
+----
+include::case2/Bean1.java[tags=class]
+----
+
+.Bean2
+[source%nowrap,java]
+----
+include::case2/Bean2.java[tags=class]
+----
+
+.QuestionTest
+[source%nowrap,java]
+----
+include::QuestionTest.java[tags=package;case2]
+----
+
+测试发现出现循环引用异常。
+
+spring bean 初始化流程为：
+
+. 通过有参构造函数实例化``Bean1``
+. 获取``Bean1``的依赖属性``Bean2``
+. 通过无参构造函数实例化``Bean2``
+. 将``Bean2``加入bean容器中
+. 设置``Bean2``的依赖属性``Bean1``，因为``Bean1``此时正在初始化中，导致异常
+
+== 案例3
+* ``Bean1``以属性注入的方式依赖于``Bean2``。
+* ``Bean2``以构造函数注入的方式依赖于``Bean1``。
+
+.Bean1
+[source%nowrap,java]
+----
+include::case3/Bean1.java[tags=class]
+----
+
+.Bean2
+[source%nowrap,java]
+----
+include::case3/Bean2.java[tags=class]
+----
+
+.QuestionTest
+[source%nowrap,java]
+----
+include::QuestionTest.java[tags=package;case3]
+----
+
+测试发现没有问题。
+
+spring bean 初始化流程为：
+
+. 通过无参构造函数实例化``Bean1``
+. 将``Bean1``加入bean容器中
+. 设置``Bean1``的依赖属性``Bean2``
+. 通过有参构造函数实例化``Bean2``
+. 获取``Bean2``的依赖属性``Bean1``，因为``Bean1``已经存在于bean容器中，直接取出
+
+== 总结
+spring bean 相互依赖是没有问题，需要注意以下几点：
+
+. 尽可能避免使用构造函数依赖
+. 双向构造函数依赖肯定会导致循环引用异常
+. 如果一方使用构造函数依赖，那么必须保证另一方先被初始化
+
+
+本文源码地址： 
+
